@@ -1,0 +1,11 @@
+<mat-card *ngIf="currentWeatherData">
+  <mat-card-title>Current weather</mat-card-title>
+  <mat-card-content>
+    <ul>
+      <li>Temperature: {{currentWeatherData.main.temp}}°C</li>
+      <li>Humidity: {{currentWeatherData.main.humidity}}</li>
+      <li>Pressure: {{currentWeatherData.main.pressure}}</li>
+      <li>Wind direction: {{currentWeatherData.wind.deg}}</li>
+    </ul>
+  </mat-card-content>
+</mat-card>
