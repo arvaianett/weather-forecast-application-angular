@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { OpenWeatherMapApiService } from '../../services/open-weather-map-api.service';
+import { LineChartSeries } from '../../models/LineChartSeries';
+import { LineChartData } from '../../models/LineChartData';
 
 @Component({
   selector: 'app-weather-forecast',
@@ -33,14 +35,4 @@ export class WeatherForecastComponent implements OnInit {
       this.lineChartData[0].series.push(singleSeriesData);
     });
   }
-}
-
-interface LineChartData {
-  name: string;
-  series: LineChartSeries[];
-}
-
-interface LineChartSeries {
-  name: string;
-  value: number;
 }

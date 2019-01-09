@@ -1,11 +1,13 @@
-<button mat-raised-button (click)="openDialog()">Select a city</button>
-
-<mat-tab-group>
+<div *ngFor="let selectedCity of usersSelectedCities">
+  <button mat-raised-button (click)="closeTab(selectedCity)">Delete {{selectedCity}}</button>
+</div>
+<mat-tab-group (selectedTabChange)="selectedTabChangeEventHandler($event)">
   <mat-tab *ngFor="let selectedCity of usersSelectedCities" [label]="selectedCity">
     <ng-template mat-tab-label>
-      {{selectedCity}}
+      <span>{{selectedCity}}</span>
       <span (click)="closeTab(selectedCity)">X</span>
     </ng-template>
     <app-tab [city]="selectedCity"></app-tab>
   </mat-tab>
+  <mat-tab label="+"></mat-tab>
 </mat-tab-group>

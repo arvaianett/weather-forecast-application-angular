@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { OpenWeatherMapApiService } from '../../services/open-weather-map-api.service';
 
 @Component({
   selector: 'app-tab',

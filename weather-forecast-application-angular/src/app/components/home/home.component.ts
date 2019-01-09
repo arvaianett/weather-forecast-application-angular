@@ -3,7 +3,6 @@ import { ModalComponent } from '../modal/modal.component';
 import { MatDialog } from '@angular/material';
 import { LocalstorageService } from '../../services/localstorage.service';
 import { ActivatedRoute } from '@angular/router';
-import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -14,19 +13,19 @@ export class HomeComponent implements OnInit {
   private selectedCity: string;
   public usersSelectedCities: string[];
   private userId: string;
-  public tabs: Tab[];
 
   constructor(
     public dialog: MatDialog,
     private localStorageService: LocalstorageService,
-    private route: ActivatedRoute,
-    private domSanitizer: DomSanitizer) {
-      this.tabs = [];
+    private route: ActivatedRoute) {
     }
 
   ngOnInit() {
     this.userId = this.getUserIdFromParam();
     this.getSelectedCities();
+    if (this.usersSelectedCities.length === 0) {
+      this.openDialog();
+    }
   }
 
   private getSelectedCities(): void {
@@ -37,15 +36,19 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  public openDialog(): void {
+  private openDialog(): void {
     const dialogRef = this.dialog.open(ModalComponent, {
-      width: '250px',
-      height: '500px',
+      width: '250',
+      height: '500',
+      hasBackdrop: true,
       data: {city: this.selectedCity}
     });
     dialogRef.afterClosed().subscribe(result => {
-      this.selectedCity = result;
-      this.addSelectedCityToUser();
+      if (result !== undefined) {
+        this.selectedCity = result;
+        this.usersSelectedCities.push(result);
+        this.addSelectedCityToUser();
+      }
     });
   }
 
@@ -54,23 +57,21 @@ export class HomeComponent implements OnInit {
   }
 
   public closeTab(city: string): void {
-    this.usersSelectedCities.filter(selectedCity => selectedCity === city);
-  }
-
-  private validateTypedCity() {
-    // TODO check if the name of the city is valid or not
+    this.localStorageService.deleteCityFromSelectedCitiesList(this.userId, city);
+    this.usersSelectedCities.forEach((selectedCity, index) => {
+      if (selectedCity === city) {
+        this.usersSelectedCities.splice(index, 1);
+      }
+    });
   }
 
   private getUserIdFromParam(): string {
     return this.route.snapshot.params['id'];
   }
 
-  private openNewTab() {
-    // TODO open dialog from tab, not button
+  public selectedTabChangeEventHandler(event): void {
+    if (event.tab.textLabel === '+') {
+      this.openDialog();
+    }
   }
-}
-
-interface Tab {
-  label: string;
-  content: SafeHtml;
 }

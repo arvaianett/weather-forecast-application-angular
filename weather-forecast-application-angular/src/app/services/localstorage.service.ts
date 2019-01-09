@@ -21,21 +21,18 @@ export class LocalstorageService {
       this.userList = this.getUserListFromLocalStorage();
     } else {
       this.userList = [];
+      this.setLocalStorage();
     }
   }
 
-  private setNewUserData(username, password): User {
+  private setNewUserData(username: string, password: string): User {
     const newUser: User = {
       id: undefined,
       username: username,
       password: password,
       selectedCities: []
     };
-    if (!this.userList) {
-      newUser.id = 1;
-    } else {
-      newUser.id = this.userList.length + 1;
-    }
+    newUser.id = this.userList.length + 1;
     return newUser;
   }
 
@@ -49,8 +46,24 @@ export class LocalstorageService {
 
   public validateUser(username: string, password: string): boolean {
     this.setUserList();
-    const loggedUser = this.getUserFromUsernameAndPassword(username, password);
-    if (loggedUser) {
+    if (this.validateExistingUser(username, password) && this.validateNewUserName(username)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private validateExistingUser(username: string, password: string): boolean {
+    if (this.getUserFromUsernameAndPassword(username, password)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  private validateNewUserName(username: string): boolean {
+    const existingUser = this.userList.find(user => user.username === username);
+    if (existingUser) {
       return false;
     } else {
       return true;
@@ -69,10 +82,21 @@ export class LocalstorageService {
   }
 
   public getUserFromUsernameAndPassword(username: string, password: string): User {
+    this.setUserList();
     return this.userList.find(user => user.username === username && user.password === password);
   }
 
   private getUserFromId(userId: string): User {
     return this.userList.find(user => user.id.toString() === userId);
+  }
+
+  public deleteCityFromSelectedCitiesList(userId: string, city: string): void {
+    const user = this.getUserFromId(userId);
+    user.selectedCities.forEach((selectedCity, index) => {
+      if (selectedCity === city) {
+        user.selectedCities.splice(index, 1);
+      }
+    });
+    this.setLocalStorage();
   }
 }
